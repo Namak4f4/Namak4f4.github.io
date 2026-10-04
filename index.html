@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>恒星間観光航空 - Stellar Horizon Airways [完全版]</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        space: {
+                            900: '#030712',
+                            800: '#0B0F19',
+                            700: '#111827',
+                            card: 'rgba(17, 24, 39, 0.7)',
+                        },
+                        cyan: { glow: '#00f0ff' },
+                        purple: { glow: '#7000ff' }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        sans: ['Noto Sans JP', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #030712;
+            color: #f3f4f6;
+            font-family: 'Noto Sans JP', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            border-color: rgba(0, 240, 255, 0.5);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px -10px rgba(0, 240, 255, 0.3);
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.6), 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; border: 1px solid rgba(0, 240, 255, 0.2); }
+    </style>
+</head>
+<body class="relative">
+
+    <canvas id="starfield" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></canvas>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b border-white/10 glass-panel">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="javascript:void(0)" onclick="switchView('main')" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 group-hover:rotate-45 transition-transform duration-500">
+                    <i class="fa-solid font-orbitron text-slate-950 font-black text-xl">S</i>
+                </div>
+                <div>
+                    <div class="font-orbitron font-bold tracking-wider text-base sm:text-lg text-white group-hover:text-cyan-400 transition-colors">STELLAR HORIZON</div>
+                    <div class="text-[9px] sm:text-[10px] tracking-widest text-cyan-400 uppercase font-semibold">恒星間観光航空</div>
+                </div>
+            </a>
+
+            <nav class="hidden lg:flex items-center space-x-6 text-xs sm:text-sm font-medium">
+                <a href="index.html#destinations" onclick="switchView('main')" class="hover:text-cyan-400 transition-colors"><i class="fa-solid fa-planet-ringed text-cyan-400"></i> 目的地</a>
+                <a href="index.html#fleet" onclick="switchView('main')" class="hover:text-cyan-400 transition-colors"><i class="fa-solid fa-shuttle-space text-cyan-400"></i> フリート＆客室</a>
+                <a href="index.html#activities" onclick="switchView('main')" class="hover:text-cyan-400 transition-colors"><i class="fa-solid fa-vr-cardboard text-cyan-400"></i> 機内体験</a>
+                <a href="index.html#route-map" onclick="switchView('main')" class="hover:text-cyan-400 transition-colors"><i class="fa-solid fa-route text-cyan-400"></i> 銀河航路</a>
+                <a href="index.html#faq" onclick="switchView('main')" class="hover:text-cyan-400 transition-colors"><i class="fa-solid fa-circle-question text-cyan-400"></i> よくある質問</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <button id="warp-speed-btn" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-orbitron border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/20 transition-all">
+                    <i class="fa-solid fa-bolt text-cyan-400 animate-pulse"></i> WARP
+                </button>
+                <a href="index.html#booking-section" onclick="switchView('main')" class="px-4 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-medium hover:opacity-90 transition-all shadow-lg shadow-cyan-500/25 flex items-center gap-2 text-xs sm:text-sm">
+                    <span>航空券予約</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </a>
+                <button id="mobile-menu-toggle" class="lg:hidden text-2xl text-gray-300 hover:text-white p-1">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden glass-panel border-t border-white/10 px-6 py-6 space-y-4">
+            <a href="index.html#destinations" onclick="switchView('main'); mobileMenu.classList.add('hidden');" class="block py-2 text-sm text-gray-200 hover:text-cyan-400"><i class="fa-solid fa-globe w-6 text-cyan-400"></i> 目的地を探す</a>
+            <a href="index.html#fleet" onclick="switchView('main'); mobileMenu.classList.add('hidden');" class="block py-2 text-sm text-gray-200 hover:text-cyan-400"><i class="fa-solid fa-shuttle-space w-6 text-cyan-400"></i> フリート＆客室クラス</a>
+            <a href="index.html#activities" onclick="switchView('main'); mobileMenu.classList.add('hidden');" class="block py-2 text-sm text-gray-200 hover:text-cyan-400"><i class="fa-solid fa-vr-cardboard w-6 text-cyan-400"></i> 機内サービス・アクティビティ</a>
+            <a href="index.html#route-map" onclick="switchView('main'); mobileMenu.classList.add('hidden');" class="block py-2 text-sm text-gray-200 hover:text-cyan-400"><i class="fa-solid fa-map-location-dot w-6 text-cyan-400"></i> 銀河航路マップ</a>
+            <a href="index.html#faq" onclick="switchView('main'); mobileMenu.classList.add('hidden');" class="block py-2 text-sm text-gray-200 hover:text-cyan-400"><i class="fa-solid fa-circle-question w-6 text-cyan-400"></i> よくある質問 (FAQ)</a>
+        </div>
+    </header>
+
+    <div id="view-main" class="transition-all duration-300">
+        <!-- Hero Section -->
+        <section class="relative min-h-screen pt-32 pb-20 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 z-10 overflow-hidden">
+            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-cyan-600/15 rounded-full blur-[140px] pointer-events-none"></div>
+            <div class="absolute top-1/3 left-1/3 w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-purple-600/15 rounded-full blur-[120px] pointer-events-none"></div>
+
+            <div class="text-center max-w-4xl mx-auto mb-10 space-y-6">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-panel border border-cyan-500/30 text-cyan-300 text-[11px] sm:text-xs font-orbitron tracking-widest uppercase">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                    宇宙時代第2世紀 - 超光速旅客運航中
+                </div>
+                
+                <h1 class="text-3xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight">
+                    星々の彼方へ、<br>
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-purple-500 text-glow">究極の贅沢旅</span>を。
+                </h1>
+
+                <p class="text-sm sm:text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
+                    量子重力ドライブが実現する快適な超光速クルーズ。地球からアルファ・ケンタウリ、そしてブラックホールまで、最高峰のプレステージ空間でおもてなし。
+                </p>
+            </div>
+
+            <!-- Quick Search -->
+            <div class="w-full max-w-5xl glass-panel p-5 sm:p-8 rounded-3xl border border-cyan-500/20 shadow-2xl relative z-20">
+                <div class="text-xs font-orbitron text-cyan-400 tracking-wider mb-4 flex items-center justify-between">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-compass"></i> クイック航路検索</span>
+                    <span id="stardate-display" class="font-mono text-gray-400 text-[10px] sm:text-xs">STARDATE: 2154.288</span>
+                </div>
+
+                <form id="hero-search-form" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-space-800/80 p-3 rounded-2xl border border-white/5">
+                        <label class="block text-[10px] sm:text-xs text-gray-400 font-medium mb-1">出発宇宙港</label>
+                        <select id="quick-origin" class="bg-transparent w-full text-xs sm:text-sm font-semibold focus:outline-none text-white cursor-pointer">
+                            <option class="bg-slate-900" value="earth">地球軌道第1ターミナル</option>
+                            <option class="bg-slate-900" value="moon">月面アルテミス基地</option>
+                            <option class="bg-slate-900" value="mars">火星オリンポスシティ</option>
+                        </select>
+                    </div>
+                    <div class="bg-space-800/80 p-3 rounded-2xl border border-white/5">
+                        <label class="block text-[10px] sm:text-xs text-gray-400 font-medium mb-1">目的地</label>
+                        <select id="quick-dest" class="bg-transparent w-full text-xs sm:text-sm font-semibold focus:outline-none text-white cursor-pointer">
+                            <option class="bg-slate-900" value="centauri">アルファ・ケンタウリBb</option>
+                            <option class="bg-slate-900" value="sirius">シリウス・プライム</option>
+                            <option class="bg-slate-900" value="trappist">TRAPPIST-1</option>
+                            <option class="bg-slate-900" value="orion">オリオン大星雲</option>
+                            <option class="bg-slate-900" value="kargan">カーガン・ブラックホール</option>
+                        </select>
+                    </div>
+                    <div class="bg-space-800/80 p-3 rounded-2xl border border-white/5">
+                        <label class="block text-[10px] sm:text-xs text-gray-400 font-medium mb-1">出発星暦</label>
+                        <input type="date" value="2154-10-15" class="bg-transparent w-full text-xs sm:text-sm font-semibold focus:outline-none text-white cursor-pointer">
+                    </div>
+                    <div class="flex items-center">
+                        <button type="submit" class="w-full h-full min-h-[45px] bg-gradient-to-r from-cyan-500 to-purple-600 hover:opacity-90 text-white font-bold rounded-2xl transition-all shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 text-xs sm:text-sm">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>空席照会</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Destinations -->
+        <section id="destinations" class="py-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <h2 class="text-xs font-orbitron text-cyan-400 tracking-widest uppercase">EXPLORE DESTINATIONS</h2>
+                <p class="text-2xl sm:text-4xl font-extrabold">厳選された恒星系リゾート</p>
+                <p class="text-xs sm:text-sm text-gray-400">最先端のワープドライブで、数千光年彼方の星々へわずか数時間でアクセス。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass-card rounded-3xl overflow-hidden flex flex-col group border border-white/10 cursor-pointer" onclick="navigateToDetail('centauri')">
+                    <div class="relative h-48 sm:h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=800&q=80" alt="Centauri" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-space-900 via-transparent to-transparent"></div>
+                        <span class="absolute top-4 right-4 bg-cyan-500/80 backdrop-blur-md text-slate-950 font-orbitron font-bold text-xs px-3 py-1 rounded-full">FTL 3.2h</span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-orbitron text-cyan-400 mb-1">ALPHA CENTAURI Bb</div>
+                            <h3 class="text-lg sm:text-xl font-bold mb-2 text-white">海洋リゾート惑星</h3>
+                            <p class="text-xs text-gray-400 mb-4 line-clamp-3">二つの太陽が沈む二重連星系の大ラグーン。無重力マリンアクティビティを満喫。</p>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-gray-300 pt-4 border-t border-white/10">
+                                <span>往復運賃</span>
+                                <span class="text-base sm:text-lg font-orbitron font-bold text-cyan-400">₵ 12,500 <span class="text-[10px] text-gray-400">CR</span></span>
+                            </div>
+                            <button onclick="event.stopPropagation(); navigateToDetail('centauri');" class="mt-4 w-full py-2.5 rounded-xl border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/20 text-xs font-medium transition-colors">詳細・スケジュールを見る</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-3xl overflow-hidden flex flex-col group border border-white/10 cursor-pointer" onclick="navigateToDetail('sirius')">
+                    <div class="relative h-48 sm:h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80" alt="Sirius" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-space-900 via-transparent to-transparent"></div>
+                        <span class="absolute top-4 right-4 bg-purple-500/80 backdrop-blur-md text-white font-orbitron font-bold text-xs px-3 py-1 rounded-full">FTL 5.5h</span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-orbitron text-purple-400 mb-1">SIRIUS PRIME</div>
+                            <h3 class="text-lg sm:text-xl font-bold mb-2 text-white">氷とオーロラの都市</h3>
+                            <p class="text-xs text-gray-400 mb-4 line-clamp-3">白亜の結晶クリスタルパレス。夜空を彩る超高エネルギーのオーロラは圧巻。</p>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-gray-300 pt-4 border-t border-white/10">
+                                <span>往復運賃</span>
+                                <span class="text-base sm:text-lg font-orbitron font-bold text-purple-400">₵ 18,200 <span class="text-[10px] text-gray-400">CR</span></span>
+                            </div>
+                            <button onclick="event.stopPropagation(); navigateToDetail('sirius');" class="mt-4 w-full py-2.5 rounded-xl border border-purple-500/40 text-purple-300 hover:bg-purple-500/20 text-xs font-medium transition-colors">詳細・スケジュールを見る</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-3xl overflow-hidden flex flex-col group border border-white/10 cursor-pointer" onclick="navigateToDetail('trappist')">
+                    <div class="relative h-48 sm:h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80" alt="Trappist" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-space-900 via-transparent to-transparent"></div>
+                        <span class="absolute top-4 right-4 bg-teal-500/80 backdrop-blur-md text-slate-950 font-orbitron font-bold text-xs px-3 py-1 rounded-full">1.2d</span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-orbitron text-teal-400 mb-1">TRAPPIST-1 SYSTEM</div>
+                            <h3 class="text-lg sm:text-xl font-bold mb-2 text-white">7つの系外惑星アイランド</h3>
+                            <p class="text-xs text-gray-400 mb-4 line-clamp-3">赤色矮星を周回する7つの地球型惑星を短期間で周遊する贅沢ツアー。</p>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-gray-300 pt-4 border-t border-white/10">
+                                <span>往復運賃</span>
+                                <span class="text-base sm:text-lg font-orbitron font-bold text-teal-400">₵ 24,000 <span class="text-[10px] text-gray-400">CR</span></span>
+                            </div>
+                            <button onclick="event.stopPropagation(); navigateToDetail('trappist');" class="mt-4 w-full py-2.5 rounded-xl border border-teal-500/40 text-teal-300 hover:bg-teal-500/20 text-xs font-medium transition-colors">詳細・スケジュールを見る</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-3xl overflow-hidden flex flex-col group border border-white/10 cursor-pointer" onclick="navigateToDetail('orion')">
+                    <div class="relative h-48 sm:h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80" alt="Orion" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-space-900 via-transparent to-transparent"></div>
+                        <span class="absolute top-4 right-4 bg-pink-500/80 backdrop-blur-md text-white font-orbitron font-bold text-xs px-3 py-1 rounded-full">2.0d</span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-orbitron text-pink-400 mb-1">ORION NEBULA</div>
+                            <h3 class="text-lg sm:text-xl font-bold mb-2 text-white">オリオン大星雲クルーズ</h3>
+                            <p class="text-xs text-gray-400 mb-4 line-clamp-3">星々が誕生する神秘の星雲内部へ。輝くガス雲のグラデーションに心奪われます。</p>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-gray-300 pt-4 border-t border-white/10">
+                                <span>往復運賃</span>
+                                <span class="text-base sm:text-lg font-orbitron font-bold text-pink-400">₵ 31,000 <span class="text-[10px] text-gray-400">CR</span></span>
+                            </div>
+                            <button onclick="event.stopPropagation(); navigateToDetail('orion');" class="mt-4 w-full py-2.5 rounded-xl border border-pink-500/40 text-pink-300 hover:bg-pink-500/20 text-xs font-medium transition-colors">詳細・スケジュールを見る</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-3xl overflow-hidden flex flex-col group border border-amber-500/30 cursor-pointer shadow-lg shadow-amber-500/10 md:col-span-2 lg:col-span-1" onclick="navigateToDetail('kargan')">
+                    <div class="relative h-48 sm:h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80" alt="Black Hole" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-space-900 via-transparent to-transparent"></div>
+                        <span class="absolute top-4 right-4 bg-amber-500/90 backdrop-blur-md text-slate-950 font-orbitron font-bold text-xs px-3 py-1 rounded-full animate-pulse">NEW スリル</span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-orbitron text-amber-400 mb-1">KARGAN BLACK HOLE</div>
+                            <h3 class="text-lg sm:text-xl font-bold mb-2 text-white">カーガン・事象の地平線クルーズ</h3>
+                            <p class="text-xs text-gray-400 mb-4 line-clamp-3">重力レンズ効果が生む光のリングを安全観測。時間遅延を体験する究極のスリルツアー。</p>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-gray-300 pt-4 border-t border-white/10">
+                                <span>往復運賃</span>
+                                <span class="text-base sm:text-lg font-orbitron font-bold text-amber-400">₵ 45,000 <span class="text-[10px] text-gray-400">CR</span></span>
+                            </div>
+                            <button onclick="event.stopPropagation(); navigateToDetail('kargan');" class="mt-4 w-full py-2.5 rounded-xl border border-amber-500/40 text-amber-300 hover:bg-amber-500/20 text-xs font-medium transition-colors">詳細・スケジュールを見る</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fleet & Cabin Classes -->
+        <section id="fleet" class="py-24 relative z-10 bg-space-800/50 border-y border-white/5">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                    <h2 class="text-xs font-orbitron text-cyan-400 tracking-widest uppercase">FLEET & CABIN CLASSES</h2>
+                    <p class="text-2xl sm:text-4xl font-extrabold">宇宙船フリート＆客室クラス</p>
+                    <p class="text-xs sm:text-sm text-gray-400">フラッグシップ「Stellar Emperor VI」号。無重力ポッドからペット同伴専用ルームまで完備。</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Imperial Suite -->
+                    <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-amber-500/30 flex flex-col justify-between">
+                        <div>
+                            <span class="inline-block px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-orbitron text-[10px] mb-4">IMPERIAL SUITE</span>
+                            <h3 class="text-xl font-bold text-white mb-2">インペリアル・スイート</h3>
+                            <p class="text-xs text-gray-300 mb-6">反重力パーソナルポッド＆360度ホログラムパノラマドームで個室から宇宙を独占。</p>
+                            <ul class="space-y-2.5 text-xs text-gray-300 mb-6">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> 完全プライベート反重力ベッド</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> 三つ星シェフAI無重力ディナー</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> 個別重力コントロール</li>
+                            </ul>
+                        </div>
+                        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
+                            <span class="text-gray-400">快適度</span>
+                            <span class="font-orbitron font-bold text-amber-400">★★★★★</span>
+                        </div>
+                    </div>
+
+                    <!-- Business Class -->
+                    <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-cyan-500/30 flex flex-col justify-between">
+                        <div>
+                            <span class="inline-block px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-orbitron text-[10px] mb-4">BUSINESS CLASS</span>
+                            <h3 class="text-xl font-bold text-white mb-2">スターライト・ビジネス</h3>
+                            <p class="text-xs text-gray-300 mb-6">個室感あふれるワープシェルターポッド。長距離航行も快適な仕事・リラクゼーション空間。</p>
+                            <ul class="space-y-2.5 text-xs text-gray-300 mb-6">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-400"></i> フルフラット就寝バイオポッド</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-400"></i> スターライトバーラウンジ</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-400"></i> 亜光速量子通信Wi-Fi無料</li>
+                            </ul>
+                        </div>
+                        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
+                            <span class="text-gray-400">快適度</span>
+                            <span class="font-orbitron font-bold text-cyan-400">★★★★☆</span>
+                        </div>
+                    </div>
+
+                    <!-- Pet Companion Pod -->
+                    <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-teal-500/30 flex flex-col justify-between">
+                        <div>
+                            <span class="inline-block px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/40 font-orbitron text-[10px] mb-4">PET POD (NEW)</span>
+                            <h3 class="text-xl font-bold text-white mb-2">ペット同伴専用ポッド</h3>
+                            <p class="text-xs text-gray-300 mb-6">愛する宇宙ペット（猫・犬・地球外生命体）と一緒に乗船できる専用の気圧・重力調整区画。</p>
+                            <ul class="space-y-2.5 text-xs text-gray-300 mb-6">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-teal-400"></i> ゼロG自動お散歩ドーム</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-teal-400"></i> 宇宙食対応アレルギーフリー給餌器</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-teal-400"></i> 獣医師AIによる24時間 health監察</li>
+                            </ul>
+                        </div>
+                        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
+                            <span class="text-gray-400">快適度</span>
+                            <span class="font-orbitron font-bold text-teal-400">★★★★★</span>
+                        </div>
+                    </div>
+
+                    <!-- Economy Class -->
+                    <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-purple-500/30 flex flex-col justify-between">
+                        <div>
+                            <span class="inline-block px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 font-orbitron text-[10px] mb-4">ECONOMY SLEEP POD</span>
+                            <h3 class="text-xl font-bold text-white mb-2">バイオリラックス・エコノミー</h3>
+                            <p class="text-xs text-gray-300 mb-6">安全なコールドスリープで時空の旅を体感させず、一瞬で目的地へワープ。</p>
+                            <ul class="space-y-2.5 text-xs text-gray-300 mb-6">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> 人工冬眠カプセル完備</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> 目覚め爽快バイオ栄養補給</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> 睡眠中ブレインウェーブ放送</li>
+                            </ul>
+                        </div>
+                        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
+                            <span class="text-gray-400">快適度</span>
+                            <span class="font-orbitron font-bold text-purple-400">★★★★☆</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- In-flight Services & Activities -->
+        <section id="activities" class="py-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <h2 class="text-xs font-orbitron text-cyan-400 tracking-widest uppercase">IN-FLIGHT EXPERIENCES</h2>
+                <p class="text-2xl sm:text-4xl font-extrabold">機内サービス・エンターテインメント</p>
+                <p class="text-xs sm:text-sm text-gray-400">数日間の航行時間を最高にエンジョイするための、未来型アクティビティ。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass-panel p-8 rounded-3xl border border-white/10 space-y-4 relative overflow-hidden">
+                    <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">無重力ガストロノミー</h3>
+                    <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                        浮遊するフレーバー球体や、宇宙栽培されたレア食材を使用した三ツ星ディナー。味覚だけでなく視覚でも楽しむ分子料理体験。
+                    </p>
+                </div>
+
+                <div class="glass-panel p-8 rounded-3xl border border-white/10 space-y-4 relative overflow-hidden">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-vr-cardboard"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">超光速リアルタイムVR</h3>
+                    <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                        ワープ航行中の船外カメラとリンクし、自分の体が宇宙空間に投げ出されたような感覚で星間飛行を遊覧できる没入型VR。
+                    </p>
+                </div>
+
+                <div class="glass-panel p-8 rounded-3xl border border-white/10 space-y-4 relative overflow-hidden">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-spa"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">ゼロG スパ＆リフレッシュ</h3>
+                    <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                        重力からの解放により凝り固まった筋肉を極上のバイオウェーブでほぐす、宇宙船内専用のデトックス＆ヒーリングスパ。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Route Map -->
+        <section id="route-map" class="py-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12 space-y-4">
+                <h2 class="text-xs font-orbitron text-cyan-400 tracking-widest uppercase">INTERACTIVE GALACTIC MAP</h2>
+                <p class="text-2xl sm:text-4xl font-extrabold">リアルタイム銀河ネットワーク</p>
+                <p class="text-xs sm:text-sm text-gray-400">ノードをクリックして主要航路の距離や所要時間、現在運航中のシップを確認。</p>
+            </div>
+
+            <div class="glass-panel p-4 sm:p-6 rounded-3xl border border-cyan-500/20 relative overflow-hidden">
+                <div class="relative w-full h-[350px] sm:h-[450px] bg-space-900/90 rounded-2xl overflow-hidden border border-white/10">
+                    <canvas id="route-canvas" class="w-full h-full cursor-crosshair"></canvas>
+                    
+                    <div class="absolute bottom-4 left-4 glass-panel p-3 rounded-xl text-[10px] sm:text-xs space-y-1 text-gray-300">
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-cyan-400 inline-block"></span> 太陽系ハブ</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-purple-400 inline-block"></span> 目的地ハブ</div>
+                    </div>
+
+                    <div id="route-info-box" class="absolute top-4 right-4 glass-panel p-4 rounded-xl text-xs max-w-[200px] sm:max-w-xs space-y-2 hidden border border-cyan-500/30">
+                        <div id="route-node-title" class="font-bold text-sm text-cyan-400">ノード選択中</div>
+                        <div id="route-node-desc" class="text-gray-300">説明文...</div>
+                        <div id="route-node-dist" class="text-gray-400 font-mono">距離: 00 光年</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Booking System -->
+        <section id="booking-section" class="py-24 relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-panel p-6 sm:p-12 rounded-3xl border border-cyan-500/30 shadow-2xl relative">
+                <div class="text-center max-w-2xl mx-auto mb-10 space-y-3">
+                    <h2 class="text-xs font-orbitron text-cyan-400 tracking-widest uppercase">RESERVATION SYSTEM</h2>
+                    <p class="text-2xl sm:text-3xl font-extrabold text-white">恒星間フライトお見積り＆予約</p>
+                    <p class="text-xs text-gray-400">必要事項を選択するとリアルタイムでワープ時間と銀河クレジット(₵)が計算されます。</p>
+                </div>
+
+                <form id="booking-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-2">1. 出発拠点を選択</label>
+                            <select id="book-origin" class="w-full bg-space-800 text-white border border-white/10 rounded-xl p-3 text-xs sm:text-sm focus:border-cyan-400 focus:outline-none">
+                                <option value="1.0">地球軌道第1ターミナル</option>
+                                <option value="0.98">月面アルテミス基地</option>
+                                <option value="1.05">火星オリンポスシティ</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-2">2. 目的地を選択</label>
+                            <select id="book-dest" class="w-full bg-space-800 text-white border border-white/10 rounded-xl p-3 text-xs sm:text-sm focus:border-cyan-400 focus:outline-none">
+                                <option value="12500" data-time="3.2 時間">アルファ・ケンタウリBb</option>
+                                <option value="18200" data-time="5.5 時間">シリウス・プライム</option>
+                                <option value="24000" data-time="1.2 日">TRAPPIST-1</option>
+                                <option value="31000" data-time="2.0 日">オリオン大星雲</option>
+                                <option value="45000" data-time="3.5 日">カーガン・ブラックホール</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-2">3. 客室クラスを選択</label>
+                            <select id="book-class" class="w-full bg-space-800 text-white border border-white/10 rounded-xl p-3 text-xs sm:text-sm focus:border-cyan-400 focus:outline-none">
+                                <option value="1.0">バイオリラックス・エコノミー (1.0x)</option>
+                                <option value="1.5">ペット同伴専用ポッド (1.5x)</option>
+                                <option value="1.8">スターライト・ビジネス (1.8x)</option>
+                                <option value="3.5">インペリアル・スイート (3.5x)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-2">4. 搭乗人数</label>
+                            <input type="number" id="book-passengers" min="1" max="10" value="1" class="w-full bg-space-800 text-white border border-white/10 rounded-xl p-3 text-xs sm:text-sm focus:border-cyan-400 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="bg-space-900/80 p-6 rounded-2xl border border-cyan-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div>
+                            <div class="text-xs text-gray-400">想定航行時間: <span id="summary-time" class="text-cyan-400 font-bold">3.2 時間</span></div>
+                            <div class="text-xs text-gray-400 mt-1">保安税・重力安定料込み</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-gray-400">概算合計金額</div>
+                            <div id="summary-price" class="text-2xl sm:text-3xl font-orbitron font-extrabold text-cyan-400">₵ 12,500 <span class="text-xs sm:text-sm font-normal text-gray-400">CR</span></div>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="submitReservation()" class="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-400 to-purple-600 text-slate-950 font-bold text-base hover:opacity-95 transition-all shadow-xl shadow-cyan-500/25">
+                        次へ進む (即時座席確保)
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="py-24 relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <h2 class="text-xs font-orbitron text-cyan-400 tracking-widest uppercase">FREQUENTLY ASKED QUESTIONS</h2>
+                <p class="text-2xl sm:text-4xl font-extrabold">よくあるご質問 (FAQ)</p>
+                <p class="text-xs sm:text-sm text-gray-400">恒星間旅行やコールドスリープ、時差に関するギモンにお答えします。</p>
+            </div>
+
+            <div class="space-y-4">
+                <!-- FAQ 1 -->
+                <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden">
+                    <button onclick="toggleFaq(1)" class="w-full p-6 text-left flex justify-between items-center gap-4 font-bold text-sm sm:text-base text-white hover:text-cyan-400 transition-colors">
+                        <span>Q. コールドスリープ中、年齢や体に変化はありますか？</span>
+                        <i id="faq-icon-1" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform"></i>
+                    </button>
+                    <div id="faq-content-1" class="hidden px-6 pb-6 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5 pt-4">
+                        A. 全くありません。バイオカプセル内の代謝停止技術により、搭乗中の肉体的な老化は完全に凍結されます。目覚めた瞬間から到着地の重力環境にスムーズに適応できるよう、覚醒直前にAIドクターによるフルボディケアが行われます。
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden">
+                    <button onclick="toggleFaq(2)" class="w-full p-6 text-left flex justify-between items-center gap-4 font-bold text-sm sm:text-base text-white hover:text-cyan-400 transition-colors">
+                        <span>Q. 宇宙酔いや重力変動による体調不良が心配です。</span>
+                        <i id="faq-icon-2" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform"></i>
+                    </button>
+                    <div id="faq-content-2" class="hidden px-6 pb-6 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5 pt-4">
+                        A. 当社の全フリートには「量子重力制振スタビライザー」が標準搭載されており、ワープ加速時や急転換時もG（加速度）を極限まで相殺します。万が一の宇宙酔いには、各客室に常備されている神経安定パッチをご利用いただけます。
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden">
+                    <button onclick="toggleFaq(3)" class="w-full p-6 text-left flex justify-between items-center gap-4 font-bold text-sm sm:text-base text-white hover:text-cyan-400 transition-colors">
+                        <span>Q. 荷物の重量制限や量子ストレージの規定はありますか？</span>
+                        <i id="faq-icon-3" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform"></i>
+                    </button>
+                    <div id="faq-content-3" class="hidden px-6 pb-6 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5 pt-4">
+                        A. エコノミーは量子圧縮トランク1個（実質容量50kg相当）、ビジネス・インペリアルおよびペットポッドは複数個の持ち込みが無料です。危険物（反物質カートリッジ、生体兵器など）の持ち込みは銀河連邦法により厳禁とされています。
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden">
+                    <button onclick="toggleFaq(4)" class="w-full p-6 text-left flex justify-between items-center gap-4 font-bold text-sm sm:text-base text-white hover:text-cyan-400 transition-colors">
+                        <span>Q. 予約のキャンセルや星暦の変更は可能ですか？</span>
+                        <i id="faq-icon-4" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform"></i>
+                    </button>
+                    <div id="faq-content-4" class="hidden px-6 pb-6 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5 pt-4">
+                        A. 出発星暦の7日前までであれば、手数料無料で別の星暦や航路への変更が可能です。時空歪み遅延保険にご加入いただいている場合、超新星爆発や空間嵐による遅延・キャンセルも全額補償されます。
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="view-detail" class="hidden min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto relative z-10 transition-all duration-300">
+        <div class="mb-8">
+            <button onclick="switchView('main')" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass-panel text-cyan-300 hover:text-cyan-400 text-xs sm:text-sm font-medium border border-cyan-500/30 transition-all">
+                <i class="fa-solid fa-arrow-left"></i> トップページ（全航路一覧）に戻る
+            </button>
+        </div>
+
+        <div id="detail-container" class="space-y-8">
+            <!-- Dynamic content populated via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="relative z-10 border-t border-white/10 bg-space-900/90 pt-16 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+            <div class="space-y-4">
+                <a href="#" class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center font-orbitron font-bold text-slate-950 text-xs">S</div>
+                    <span class="font-orbitron font-bold text-base text-white">STELLAR HORIZON</span>
+                </a>
+                <p class="text-xs text-gray-400 leading-relaxed">
+                    恒星間観光航空株式会社<br>
+                    銀河連邦国土交通省 登録第0001号<br>
+                    地球本部: 軌道エレベーターステーション3F
+                </p>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-orbitron text-cyan-400 mb-4 tracking-wider">DESTINATIONS</h4>
+                <ul class="space-y-2 text-xs text-gray-400">
+                    <li><a href="index.html#destinations" onclick="switchView('main')" class="hover:text-white">アルファ・ケンタウリ</a></li>
+                    <li><a href="index.html#destinations" onclick="switchView('main')" class="hover:text-white">シリウス・プライム</a></li>
+                    <li><a href="index.html#destinations" onclick="switchView('main')" class="hover:text-white">TRAPPIST-1 エリア</a></li>
+                    <li><a href="index.html#destinations" onclick="switchView('main')" class="hover:text-white">オリオン大星雲</a></li>
+                    <li><a href="index.html#destinations" onclick="switchView('main')" class="hover:text-white">カーガン・ブラックホール</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-orbitron text-cyan-400 mb-4 tracking-wider">SUPPORT & LEGAL</h4>
+                <ul class="space-y-2 text-xs text-gray-400">
+                    <li><a href="index.html#faq" onclick="switchView('main')" class="hover:text-white">よくある質問 (FAQ)</a></li>
+                    <li><a href="#" class="hover:text-white">超光速航行の安全基準</a></li>
+                    <li><a href="#" class="hover:text-white">時空歪み遅延保険</a></li>
+                    <li><a href="#" class="hover:text-white">手荷物・量子ストレージ制限</a></li>
+                </ul>
+            </div>
+
+            <div class="space-y-4">
+                <h4 class="text-xs font-orbitron text-cyan-400 tracking-wider">STARDATE NEWSLETTER</h4>
+                <p class="text-xs text-gray-400">新航路開設やプロモーション情報をお届け。</p>
+                <div class="flex gap-2">
+                    <input type="email" placeholder="コムリンクID" class="bg-space-800 text-xs px-3 py-2 rounded-xl border border-white/10 w-full focus:outline-none focus:border-cyan-400 text-white">
+                    <button class="px-4 py-2 bg-cyan-500 text-slate-950 font-bold text-xs rounded-xl hover:bg-cyan-400">登録</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-white/5 pt-8 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-500">
+            <div>&copy; 2154 Stellar Horizon Airways Co., Ltd. All Rights Reserved.</div>
+            <div class="mt-4 sm:mt-0 flex gap-4 font-mono text-[10px]">
+                <span>SYSTEM: OPERATIONAL</span>
+                <span>WARP FIELD: STABLE</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const mobileToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileToggle.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        // Starfield Canvas
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        let speedMultiplier = 1;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Star {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = (Math.random() - 0.5) * canvas.width * 2;
+                this.y = (Math.random() - 0.5) * canvas.height * 2;
+                this.z = Math.random() * canvas.width;
+                this.size = Math.random() * 1.5 + 0.5;
+            }
+            update() {
+                this.z -= 2 * speedMultiplier;
+                if (this.z <= 0) { this.reset(); this.z = canvas.width; }
+            }
+            draw() {
+                const k = 256 / this.z;
+                const px = this.x * k + canvas.width / 2;
+                const py = this.y * k + canvas.height / 2;
+                if (px >= 0 && px <= canvas.width && py >= 0 && py <= canvas.height) {
+                    const alpha = Math.min(1, (1 - this.z / canvas.width) * 1.2);
+                    ctx.beginPath();
+                    ctx.fillStyle = `rgba(0, 240, 255, ${alpha})`;
+                    ctx.arc(px, py, this.size * k * 0.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+        for (let i = 0; i < 300; i++) stars.push(new Star());
+        function animateStarfield() {
+            ctx.fillStyle = 'rgba(3, 7, 18, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => { s.update(); s.draw(); });
+            requestAnimationFrame(animateStarfield);
+        }
+        animateStarfield();
+
+        const warpBtn = document.getElementById('warp-speed-btn');
+        let isWarping = false;
+        warpBtn.addEventListener('click', () => {
+            isWarping = !isWarping;
+            if (isWarping) {
+                speedMultiplier = 12;
+                warpBtn.classList.add('bg-cyan-500', 'text-slate-950');
+                warpBtn.innerHTML = '<i class="fa-solid fa-gauge-high"></i> WARP ACTIVE!';
+            } else {
+                speedMultiplier = 1;
+                warpBtn.classList.remove('bg-cyan-500', 'text-slate-950');
+                warpBtn.innerHTML = '<i class="fa-solid fa-bolt text-cyan-400 animate-pulse"></i> WARP';
+            }
+        });
+
+        // Route Map
+        const routeCanvas = document.getElementById('route-canvas');
+        const routeCtx = routeCanvas.getContext('2d');
+        let routeWidth, routeHeight;
+
+        function resizeRouteCanvas() {
+            routeWidth = routeCanvas.parentElement.clientWidth;
+            routeHeight = routeCanvas.parentElement.clientHeight;
+            routeCanvas.width = routeWidth;
+            routeCanvas.height = routeHeight;
+        }
+        resizeRouteCanvas();
+        window.addEventListener('resize', resizeRouteCanvas);
+
+        const nodes = [
+            { id: 'earth', name: '地球ターミナル', x: 0.2, y: 0.5, color: '#00f0ff', desc: '太陽系最大の宇宙港ハブ', dist: '0 光年' },
+            { id: 'centauri', name: 'アルファ・ケンタウリ', x: 0.5, y: 0.3, color: '#7000ff', desc: 'リゾートラグーン惑星', dist: '4.37 光年' },
+            { id: 'sirius', name: 'シリウス・プライム', x: 0.7, y: 0.45, color: '#7000ff', desc: '氷河のオーロラ都市', dist: '8.6 光年' },
+            { id: 'trappist', name: 'TRAPPIST-1', x: 0.85, y: 0.25, color: '#14b8a6', desc: '7系外惑星巡りルート', dist: '39.6 光年' },
+            { id: 'orion', name: 'オリオン大星雲', x: 0.65, y: 0.8, color: '#ec4899', desc: '星雲鑑賞スペシャル航路', dist: '1,344 光年' },
+            { id: 'kargan', name: 'カーガンBH', x: 0.8, y: 0.75, color: '#f59e0b', desc: '事象の地平線観測ステーション', dist: '5,200 光年' },
+        ];
+        let selectedNode = nodes[0];
+
+        function drawRouteMap() {
+            routeCtx.clearRect(0, 0, routeWidth, routeHeight);
+            nodes.forEach(n => {
+                nodes.forEach(n2 => {
+                    if (n.id !== n2.id) {
+                        routeCtx.beginPath();
+                        routeCtx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+                        routeCtx.lineWidth = 1;
+                        routeCtx.setLineDash([3, 3]);
+                        routeCtx.moveTo(n.x * routeWidth, n.y * routeHeight);
+                        routeCtx.lineTo(n2.x * routeWidth, n2.y * routeHeight);
+                        routeCtx.stroke();
+                        routeCtx.setLineDash([]);
+                    }
+                });
+            });
+
+            nodes.forEach(node => {
+                const nx = node.x * routeWidth;
+                const ny = node.y * routeHeight;
+                const isSelected = selectedNode && selectedNode.id === node.id;
+
+                routeCtx.beginPath();
+                routeCtx.fillStyle = node.color;
+                routeCtx.arc(nx, ny, isSelected ? 10 : 6, 0, Math.PI * 2);
+                routeCtx.fill();
+
+                if (isSelected) {
+                    routeCtx.beginPath();
+                    routeCtx.strokeStyle = '#ffffff';
+                    routeCtx.lineWidth = 2;
+                    routeCtx.arc(nx, ny, 14, 0, Math.PI * 2);
+                    routeCtx.stroke();
+                }
+
+                routeCtx.fillStyle = '#f3f4f6';
+                routeCtx.font = '10px Noto Sans JP';
+                routeCtx.fillText(node.name, nx + 10, ny + 3);
+            });
+            requestAnimationFrame(drawRouteMap);
+        }
+        drawRouteMap();
+
+        routeCanvas.addEventListener('click', (e) => {
+            const rect = routeCanvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            nodes.forEach(node => {
+                const nx = node.x * routeWidth;
+                const ny = node.y * routeHeight;
+                if (Math.hypot(clickX - nx, clickY - ny) < 20) {
+                    selectedNode = node;
+                    showRouteInfo(node);
+                }
+            });
+        });
+
+        function showRouteInfo(node) {
+            const infoBox = document.getElementById('route-info-box');
+            document.getElementById('route-node-title').innerText = node.name;
+            document.getElementById('route-node-desc').innerText = node.desc;
+            document.getElementById('route-node-dist').innerText = `地球からの距離: ${node.dist}`;
+            infoBox.classList.remove('hidden');
+        }
+
+        // Comprehensive Detailed Destination Database with Full Itineraries & Sightseeing Spots
+        const destinationDetails = {
+            centauri: {
+                id: 'centauri',
+                tag: 'ALPHA CENTAURI Bb',
+                title: '海洋リゾート惑星「アズール・ケンタウリ」',
+                subtitle: '二つの太陽が沈む二重連星系の大ラグーン。無重力マリンアクティビティを満喫。',
+                image: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=1200&q=80',
+                warp: '3.2 時間',
+                distance: '4.37 光年',
+                price: '₵ 12,500 CR',
+                schedule: [
+                    { day: 'Day 1', title: '地球発進 ＆ 超光速クルーズ', desc: '地球軌道第1ターミナルを出発。量子重力ドライブによる3.2時間の快適な超光速航行。到着後は水上クリスタルコテージへチェックインし、二重連星のサンセットディナーを満喫。' },
+                    { day: 'Day 2', title: '無重力ラグーン＆バイオシュノーケル', desc: '珊瑚状の発光生物が生息する遠浅の海でゼロGスキューバダイビング。午後はプラズマ・ビーチで極上のリラクゼーション。' },
+                    { day: 'Day 3', title: '恒星間帰還', desc: '朝の洋上ヨガセッションの後、第1ターミナルへ向けワープ帰還。' }
+                ],
+                spots: [
+                    { name: 'ツインサンセット・ラグーン', desc: '二つの恒星が同時に黄金色の光を海面に投げかける絶景スポット。' },
+                    { name: '発光コーラル礁の迷宮', desc: '夜間に青く光るエキゾチックな原生海洋植物の群生地。' },
+                    { name: '海中展望スパ「ネプチューン」', desc: '水圧ゼロの浮遊感を味わいながら受けられる極上のマッサージ。' }
+                ]
+            },
+            sirius: {
+                id: 'sirius',
+                tag: 'SIRIUS PRIME',
+                title: '氷とオーロラの都市「シリウス・プライム」',
+                subtitle: '白亜の結晶クリスタルパレス。夜空を彩る超高エネルギーのオーロラは圧巻。',
+                image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1200&q=80',
+                warp: '5.5 時間',
+                distance: '8.6 光年',
+                price: '₵ 18,200 CR',
+                schedule: [
+                    { day: 'Day 1', title: 'シリウス到着 ＆ クリスタルチェックイン', desc: 'シリウス・プライム宇宙港に到着。氷晶で造られた純白のホテル「パレス・オブ・アイス」へ。夜は全天球オーロララウンジへご招待。' },
+                    { day: 'Day 2', title: '超伝導スノーモービル探検', desc: '永久凍土の氷河フィールドを反重力スノーモービルで疾走。地下の巨大氷穴洞窟で自然の芸術を鑑賞。' },
+                    { day: 'Day 3', title: '帰路へ', desc: '極寒モーニングティーを楽しんだ後、帰還船へ搭乗。' }
+                ],
+                spots: [
+                    { name: 'オーロラ・ドーム大聖堂', desc: '夜空を舞う高エネルギー・プラズマのカーテンを360度見渡せるガラス張りドーム。' },
+                    { name: '永遠の氷河クリスタル洞窟', desc: '何万年もの間圧縮された純度100%の青く輝く氷のトンネル。' }
+                ]
+            },
+            trappist: {
+                id: 'trappist',
+                tag: 'TRAPPIST-1 SYSTEM',
+                title: '7つの系外惑星アイランド周遊',
+                subtitle: '赤色矮星を周回する7つの地球型惑星を短期間で周遊する贅沢ツアー。',
+                image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1200&q=80',
+                warp: '1.2 日',
+                distance: '39.6 光年',
+                price: '₵ 24,000 CR',
+                schedule: [
+                    { day: 'Day 1', title: 'トラピスト系突入 ＆ 惑星b・c探索', desc: '太陽系から39.6光年を突破しトラピスト星系へ。惑星bの灼熱の渓谷と惑星cの厚い雲海をホログラムガイド付きで巡る。' },
+                    { day: 'Day 2', title: '生命の息吹・惑星e滞在', desc: 'ハビタブルゾーンの中心に位置する美しい水惑星eに上陸。現地のエキゾチックな生態系を観察。' },
+                    { day: 'Day 3-4', title: '外縁惑星群めぐり ＆ 帰還', desc: '惑星f, g, hの神秘的な氷と岩石の世界を連続フライバイし、地球へ帰還。' }
+                ],
+                spots: [
+                    { name: '惑星e「エデン・ラグーン」', desc: '植物が淡い紫色に輝く、穏やかな海が広がる地球外オアシス。' },
+                    { name: '惑星h「トワイライト・アイスランド」', desc: '常に薄明かりに包まれた神秘的な氷の世界。' }
+                ]
+            },
+            orion: {
+                id: 'orion',
+                tag: 'ORION NEBULA',
+                title: 'オリオン大星雲 星生成クルーズ',
+                subtitle: '星々が誕生する神秘の星雲内部へ。輝くガス雲のグラデーションに心奪われます。',
+                image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
+                warp: '2.0 日',
+                distance: '1,344 光年',
+                price: '₵ 31,000 CR',
+                schedule: [
+                    { day: 'Day 1', title: '深宇宙突入 ＆ 星雲エントランス', desc: '1,344光年彼方のオリオン大星雲M42へ向けワープ。船首展望デッキにて、巨大なガスと塵が織りなす極彩色の宇宙絵巻が目の前に。' },
+                    { day: 'Day 2', title: '原始星プロトスター観測', desc: 'まさに今生まれようとしている若い恒星の誕生プロセスを、宇宙物理学者の特別解説付きで安全ガラス越しに観測。' },
+                    { day: 'Day 3', title: '星間クルーズ帰還', desc: '宇宙誕生の神秘に感動を刻みながら帰還。' }
+                ],
+                spots: [
+                    { name: 'トラペジウム星団フロントビュー', desc: '若く強烈に輝く4つの巨大星が星雲の中心で光の彫刻を作り出すスポット。' },
+                    { name: '星間ガス・パノラマテラス', desc: 'ピンクや紫に輝く星雲の中に船がすっぽり包み込まれる究極の浮遊感。' }
+                ]
+            },
+            kargan: {
+                id: 'kargan',
+                tag: 'KARGAN BLACK HOLE',
+                title: 'カーガン・事象の地平線クルーズ',
+                subtitle: '重力レンズ効果が生む光のリングを安全観測。時間遅延を体験する究極のスリルツアー。',
+                image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1200&q=80',
+                warp: '3.5 日',
+                distance: '5,200 光年',
+                price: '₵ 45,000 CR',
+                schedule: [
+                    { day: 'Day 1', title: '極限重力域への接近', desc: '質量太陽系数百万倍の巨大ブラックホール「カーガン」の安全宙域へ到着。重力磁気シールドを展開。' },
+                    { day: 'Day 2', title: '事象の地平線・光のリング観測', desc: '光すら曲げる重力レンズ効果により、背後の星々がリング状に歪む圧巻の光景を特殊ビュワーで観測。' },
+                    { day: 'Day 3', title: '時間遅延（ウラシマ効果）サロン', desc: '宇宙船内のわずか1日が外部の数年分に相当する相対性理論のロマンを体験。' },
+                    { day: 'Day 4', title: '帰還の途へ', desc: '無事に重力井戸を脱出し、太陽系へワープアウト。' }
+                ],
+                spots: [
+                    { name: 'フォトン・リング観測ドーム', desc: 'ブラックホールの周りを回る光の軌跡を至近距離から眺める特等席。' },
+                    { name: 'アインシュタイン・ラウンジ', desc: '時空のゆがみを感じながら特製重力カクテルを楽しめるバー。' }
+                ]
+            }
+        };
+
+        // SPA View Switcher with Dynamic Destination Content Population
+        function switchView(viewName, destKey = null) {
+            const mainView = document.getElementById('view-main');
+            const detailView = document.getElementById('view-detail');
+            const detailContainer = document.getElementById('detail-container');
+
+            if (viewName === 'main') {
+                detailView.classList.add('hidden');
+                mainView.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (viewName === 'detail' && destKey) {
+                const data = destinationDetails[destKey];
+                if (!data) return;
+
+                mainView.classList.add('hidden');
+                detailView.classList.remove('hidden');
+
+                // Populate detail page HTML
+                detailContainer.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-orbitron text-xs">
+                            ${data.tag}
+                        </div>
+                        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white">${data.title}</h1>
+                        <p class="text-sm sm:text-base text-gray-300 leading-relaxed">${data.subtitle}</p>
+
+                        <!-- Hero Image -->
+                        <div class="relative h-64 sm:h-96 rounded-3xl overflow-hidden border border-cyan-500/30 shadow-2xl">
+                            <img src="${data.image}" alt="${data.title}" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-space-900 via-transparent to-transparent"></div>
+                            <div class="absolute bottom-6 left-6 right-6 flex flex-wrap items-center justify-between gap-4">
+                                <div class="glass-panel px-4 py-2 rounded-2xl text-xs space-x-4">
+                                    <span>所要ワープ: <strong class="text-cyan-400 font-orbitron">${data.warp}</strong></span>
+                                    <span>地球からの距離: <strong class="text-purple-400 font-orbitron">${data.distance}</strong></span>
+                                </div>
+                                <div class="glass-panel px-4 py-2 rounded-2xl text-xs">
+                                    往復運賃: <strong class="text-amber-400 font-orbitron text-sm">${data.price}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Itinerary & Schedule -->
+                        <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 space-y-6">
+                            <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-cyan-400"></i> 具体的なフライト＆滞在スケジュール
+                            </h2>
+                            <div class="space-y-4">
+                                ${data.schedule.map(s => `
+                                    <div class="bg-space-800/80 p-5 rounded-2xl border border-white/5 space-y-2">
+                                        <div class="inline-block px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-orbitron font-bold">${s.day}</div>
+                                        <h3 class="font-bold text-sm sm:text-base text-white">${s.title}</h3>
+                                        <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">${s.desc}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Sightseeing Spots -->
+                        <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 space-y-6">
+                            <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-camera-retro text-purple-400"></i> おすすめ観光スポット・体験
+                            </h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                ${data.spots.map(spot => `
+                                    <div class="bg-space-800/60 p-5 rounded-2xl border border-white/5 space-y-2">
+                                        <h3 class="font-bold text-sm text-cyan-300 flex items-center gap-2"><i class="fa-solid fa-star text-[10px] text-amber-400"></i> ${spot.name}</h3>
+                                        <p class="text-xs text-gray-300 leading-relaxed">${spot.desc}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Call to Action -->
+                        <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-cyan-500/30 text-center space-y-4">
+                            <h3 class="text-lg font-bold text-white">この目的地の座席を今すぐ確保する</h3>
+                            <p class="text-xs text-gray-300">リアルタイムの空席状況と量子割引プランを確認できます。</p>
+                            <button onclick="switchView('main'); setTimeout(() => { document.getElementById('booking-section').scrollIntoView(); document.getElementById('book-dest').value = '${destKey === 'centauri' ? '12500' : destKey === 'sirius' ? '18200' : destKey === 'trappist' ? '24000' : destKey === 'orion' ? '31000' : '45000'}; updateBookingPrice(); }, 100);" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold text-sm shadow-xl shadow-cyan-500/25 hover:opacity-95 transition-all">
+                                予約システムへ進む
+                            </button>
+                        </div>
+                    </div>
+                `;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function navigateToDetail(destKey) {
+            switchView('detail', destKey);
+        }
+
+        // Booking Calculator
+        const destSelect = document.getElementById('book-dest');
+        const classSelect = document.getElementById('book-class');
+        const passInput = document.getElementById('book-passengers');
+        const summaryPrice = document.getElementById('summary-price');
+        const summaryTime = document.getElementById('summary-time');
+
+        function updateBookingPrice() {
+            if (!destSelect || !classSelect || !passInput) return;
+            const basePrice = parseFloat(destSelect.value);
+            const classMultiplier = parseFloat(classSelect.value);
+            const passengers = parseInt(passInput.value) || 1;
+            const time = destSelect.options[destSelect.selectedIndex].getAttribute('data-time');
+            const total = Math.round(basePrice * classMultiplier * passengers);
+            summaryPrice.innerHTML = `₵ ${total.toLocaleString()} <span class="text-xs sm:text-sm font-normal text-gray-400">CR</span>`;
+            summaryTime.innerText = time;
+        }
+        if (destSelect) destSelect.addEventListener('change', updateBookingPrice);
+        if (classSelect) classSelect.addEventListener('change', updateBookingPrice);
+        if (passInput) passInput.addEventListener('input', updateBookingPrice);
+
+        function submitReservation() {
+            alert('【恒星間予約システム】\n座席の仮確保が完了しました。量子通信端末（コムリンク）へ確認キーを送信いたしました。');
+        }
+
+        // FAQ Toggle
+        function toggleFaq(id) {
+            const content = document.getElementById(`faq-content-${id}`);
+            const icon = document.getElementById(`faq-icon-${id}`);
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        const heroSearchForm = document.getElementById('hero-search-form');
+        if (heroSearchForm) {
+            heroSearchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                document.getElementById('booking-section').scrollIntoView();
+            });
+        }
+    </script>
+</body>
+</html>
